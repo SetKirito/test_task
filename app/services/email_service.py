@@ -1,20 +1,20 @@
 import asyncio
-import os
 import smtplib
 from email.message import EmailMessage
 
 from app.core.logging import error_logger
+from app.core.config import settings
 
 
 class EmailService:
     def __init__(self) -> None:
-        self.smtp_host = os.getenv("SMTP_HOST", "")
-        self.smtp_port = int(os.getenv("SMTP_PORT", "587"))
-        self.smtp_user = os.getenv("SMTP_USER", "")
-        self.smtp_password = os.getenv("SMTP_PASSWORD", "")
-        self.owner_email = os.getenv("OWNER_EMAIL", "owner@example.com")
+        self.smtp_host = settings.SMTP_HOST or ""
+        self.smtp_port = int(settings.SMTP_PORT or 587)
+        self.smtp_user = settings.SMTP_USER or ""
+        self.smtp_password = settings.SMTP_PASSWORD or ""
+        self.owner_email = settings.OWNER_EMAIL or "owner@example.com"
         self.smtp_timeout = 5
-        self.smtp_use_ssl = os.getenv("SMTP_USE_SSL", "false").strip().lower() in {"1", "true", "yes", "on"}
+        self.smtp_use_ssl = False
 
     async def send_contact_notification_async(self, *, name: str, phone: str, email: str, comment: str) -> bool:
         return await asyncio.to_thread(self.send_contact_notification, name=name, phone=phone, email=email, comment=comment)

@@ -1,15 +1,15 @@
 import asyncio
-import os
 
 import openai
 
 from app.core.logging import error_logger
+from app.core.config import settings
 
 
 class AIService:
     def __init__(self) -> None:
-        self.api_key = os.getenv("OPENAI_API_KEY", "")
-        self.model = os.getenv("OPENAI_MODEL", "gpt-3.5-turbo")
+        self.api_key = settings.OPENAI_API_KEY or ""
+        self.model = settings.OPENAI_MODEL or "gpt-3.5-turbo"
 
     async def analyze_async(self, *, text: str) -> dict[str, str]:
         return await asyncio.to_thread(self.analyze, text=text)
@@ -62,3 +62,15 @@ class AIService:
                 pass
 
         return {"sentiment": "unknown", "category": "Other"}
+
+    def ping(self) -> bool:
+        if not self.api_key:
+            return False
+
+        try:
+            client = openai.OpenAI(api_key=self.api_key)
+            client.models.list()
+            return True
+        except Exception as exc:
+            error_logger.warning("AI ping failed: %s", exc)
+            return False

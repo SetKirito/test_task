@@ -16,6 +16,6 @@ app = FastAPI(
 
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
 app.add_middleware(RequestLoggingMiddleware)
-app.add_middleware(RateLimitMiddleware, limit=5, window_seconds=60)
+app.add_middleware(RateLimitMiddleware, limit=settings.RATE_LIMIT, window_seconds=settings.RATE_WINDOW)
 register_exception_handlers(app)
 app.include_router(contact_router)

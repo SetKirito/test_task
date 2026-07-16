@@ -27,14 +27,6 @@ class ContactService:
         ai_result = await self.ai_service.analyze_async(text=data.comment)
         await asyncio.to_thread(self.repository.update_ai_result, contact.id, ai_result["sentiment"])
 
-        await self.email_service.send_contact_notification_async(
-            name=data.name,
-            phone=data.phone,
-            email=str(data.email),
-            comment=data.comment,
-        )
-        await self.email_service.send_thank_you_email_async(email=str(data.email))
-
         return {
             "success": True,
             "id": contact.id,

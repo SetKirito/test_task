@@ -12,7 +12,4 @@ class ContactController:
         return await self.service.get_metrics()
 
     async def create_contact(self, data: ContactRequest) -> dict:
-        try:
-            return await self.service.create_contact(data)
-        except Exception as exc:
-            raise HTTPException(status_code=500, detail=str(exc)) from exc
+        return await self.service.create_contact(data)
