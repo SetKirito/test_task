@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     SMTP_PORT: int = 587
     SMTP_USER: str | None = None
     SMTP_PASSWORD: str | None = None
+    SMTP_USE_SSL: bool = False
     OWNER_EMAIL: str = "owner@example.com"
 
     OPENAI_API_KEY: str | None = None

@@ -28,22 +28,25 @@ def get_contact_controller(db: Session = Depends(get_db)) -> ContactController:
     return ContactController(service)
 
 
-@router.get("/api/health")
+@router.get("/api/health", summary="Health check", description="Returns service health status for database and AI readiness.")
 async def health(db: Session = Depends(get_db)):
-    status = {"status": "ok"}
+    database_status = "connected"
     try:
         db.execute(text("SELECT 1"))
-        status["database"] = "connected"
     except Exception:
-        status["database"] = "unavailable"
+        database_status = "unavailable"
 
     ai_service = AIService()
-    status["ai"] = "available" if ai_service.ping() else "unavailable"
+    ai_status = "available" if ai_service.ping() else "degraded"
 
-    return status
+    return {
+        "status": "ok",
+        "database": database_status,
+        "ai": ai_status,
+    }
 
 
-@router.get("/metrics")
+@router.get("/api/metrics")
 async def get_metrics(db: Session = Depends(get_db)):
     repository = ContactRepository(db)
     service = ContactService(repository, ai_service=AIService(), email_service=EmailService())
@@ -51,7 +54,12 @@ async def get_metrics(db: Session = Depends(get_db)):
     return await controller.get_metrics()
 
 
-@router.post("/api/contact", status_code=201)
+@router.post(
+    "/api/contact",
+    status_code=201,
+    summary="Create contact request",
+    description="Creates a contact message, stores it in the database, runs AI sentiment analysis, and schedules email notifications.",
+)
 async def create_contact(
     data: ContactRequest,
     background_tasks: BackgroundTasks,

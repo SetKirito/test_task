@@ -36,11 +36,9 @@ class ContactRepository:
         result = (
             self.db.query(
                 func.count(Contact.id).label("total_contacts"),
-                func.sum(case((Contact.created_at >= today_start, 1), else_=0)).label("today"),
                 func.sum(case((Contact.ai_result == "positive", 1), else_=0)).label("positive"),
                 func.sum(case((Contact.ai_result == "negative", 1), else_=0)).label("negative"),
             )
-            .filter(Contact.created_at < today_end)
             .first()
         )
 
