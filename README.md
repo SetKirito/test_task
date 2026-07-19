@@ -17,7 +17,7 @@
 ### 1. Клонирование репозитория
 
 ```bash
-git clone https://github.com/SetKirito/test_task.git
+git clone https://github.com/SetKirito/Backend-API.git
 cd test_task
 ```
 
